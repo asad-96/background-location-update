@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Awesome Capacitor App</title>
+    <meta
+      name="viewport"
+      content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <style>
+      body {
+        margin-top: 2em;
+      }
+      ul {
+        padding: 0;
+        margin: 0;
+        list-style-type: none;
+      }
+    </style>
+
+    <!-- un-comment this code to enable service worker
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(() => console.log('service worker installed'))
+        .catch(err => console.log('Error', err));
+    }
+  </script>-->
+  </head>
+  <body>
+    <ul id="watchers"></ul>
+
+    <button onclick="add_watcher(false)">+FG</button>
+    <button onclick="add_watcher(true)">+BG</button>
+    Guess:
+    <button onclick="guess(50)">50ms</button>
+    <button onclick="guess(100)">100ms</button>
+    <button onclick="guess(250)">250ms</button>
+    <button onclick="guess(1000)">1000ms</button>
+
+    <ul id="log">
+      <li>Init</li>
+    </ul>
+
+    <script src="capacitor.js"></script>
+    <script src="main.js"></script>
+  </body>
+</html>

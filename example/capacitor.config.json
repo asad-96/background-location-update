@@ -1,5 +1,5 @@
 {
-  "appId": "com.example.plugin",
+  "appId": "com.example.app",
   "appName": "example",
   "bundledWebRuntime": true,
   "webDir": "www",

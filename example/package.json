@@ -8,11 +8,13 @@
     "mobile"
   ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "prepare": "cp -R node_modules/@capacitor/core/dist/capacitor.js* www/"
   },
   "dependencies": {
-    "@capacitor/core": "latest",
+    "@capacitor/android": "^3.4.3",
     "@capacitor/camera": "latest",
+    "@capacitor/core": "latest",
+    "@capacitor/ios": "^3.4.3",
     "@capacitor/splash-screen": "latest",
     "background-location-update": "file:.."
   },
