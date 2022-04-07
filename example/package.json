@@ -8,7 +8,8 @@
     "mobile"
   ],
   "scripts": {
-    "prepare": "cp -R node_modules/@capacitor/core/dist/capacitor.js* www/"
+    "prepare": "cp -R node_modules/@capacitor/core/dist/capacitor.js* www/",
+    "start": "npx http-server"
   },
   "dependencies": {
     "@capacitor/android": "^3.4.3",

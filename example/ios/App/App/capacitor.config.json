@@ -7,5 +7,9 @@
 		"SplashScreen": {
 			"launchShowDuration": 0
 		}
+	},
+	"server": {
+		"url": "http://192.168.100.9:8080",
+		"cleartext": true
 	}
 }
