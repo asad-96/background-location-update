@@ -10,11 +10,6 @@ import type {
 export class BackgroundLocationWeb
   extends WebPlugin
   implements BackgroundLocationPlugin {
-  async echo(options: { value: string }): Promise<{ value: string }> {
-    console.log('ECHO', options);
-    return options;
-  }
-
   async addWatcher(
     options: WatcherOptions,
     callback: (position?: Location, error?: CallbackError) => void,

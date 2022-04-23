@@ -19,10 +19,8 @@ import android.os.Build;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.util.Log;
-
 import androidx.core.app.ActivityCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Logger;
 import com.getcapacitor.PermissionState;
@@ -34,14 +32,13 @@ import com.getcapacitor.annotation.Permission;
 import com.getcapacitor.annotation.PermissionCallback;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
-
 import org.json.JSONObject;
 
 @CapacitorPlugin(
-        name = "BackgroundLocation",
-        permissions = {
-                @Permission(alias = "location", strings = {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION})
-        }
+    name = "BackgroundLocation",
+    permissions = {
+        @Permission(alias = "location", strings = { Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION })
+    }
 )
 public class BackgroundLocationPlugin extends Plugin {
 
@@ -49,15 +46,6 @@ public class BackgroundLocationPlugin extends Plugin {
     private Boolean stoppedWithoutPermissions = false;
 
     private BackgroundLocation implementation = new BackgroundLocation();
-
-    @PluginMethod
-    public void echo(PluginCall call) {
-        String value = call.getString("value");
-
-        JSObject ret = new JSObject();
-        ret.put("value", implementation.echo(value));
-        call.resolve(ret);
-    }
 
     @PluginMethod(returnType = PluginMethod.RETURN_CALLBACK)
     public void addWatcher(final PluginCall call) {
@@ -80,10 +68,10 @@ public class BackgroundLocationPlugin extends Plugin {
         }
         if (call.getBoolean("stale", false)) {
             if (
-                    ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) !=
-                            PackageManager.PERMISSION_GRANTED &&
-                            ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) !=
-                                    PackageManager.PERMISSION_GRANTED
+                ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) !=
+                PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) !=
+                PackageManager.PERMISSION_GRANTED
             ) {
                 // TODO: Consider calling
                 //    ActivityCompat#requestPermissions
@@ -95,29 +83,29 @@ public class BackgroundLocationPlugin extends Plugin {
                 return;
             }
             LocationServices
-                    .getFusedLocationProviderClient(getContext())
-                    .getLastLocation()
-                    .addOnSuccessListener(
-                            getActivity(),
-                            new OnSuccessListener<Location>() {
-                                @Override
-                                public void onSuccess(Location location) {
-                                    if (location != null) {
-                                        call.resolve(formatLocation(location));
-                                    }
-                                }
+                .getFusedLocationProviderClient(getContext())
+                .getLastLocation()
+                .addOnSuccessListener(
+                    getActivity(),
+                    new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            if (location != null) {
+                                call.resolve(formatLocation(location));
                             }
-                    );
+                        }
+                    }
+                );
         }
         Notification backgroundNotification = null;
         String backgroundMessage = call.getString("backgroundMessage");
         if (backgroundMessage != null) {
             Notification.Builder builder = new Notification.Builder(getContext())
-                    .setContentTitle(call.getString("backgroundTitle", "Using your location"))
-                    .setContentText(backgroundMessage)
-                    .setOngoing(true)
-                    .setPriority(Notification.PRIORITY_HIGH)
-                    .setWhen(System.currentTimeMillis());
+                .setContentTitle(call.getString("backgroundTitle", "Using your location"))
+                .setContentText(backgroundMessage)
+                .setOngoing(true)
+                .setPriority(Notification.PRIORITY_HIGH)
+                .setWhen(System.currentTimeMillis());
 
             try {
                 String name = getAppString("capacitor_background_location_notification_icon", "mipmap/ic_launcher");
@@ -134,12 +122,12 @@ public class BackgroundLocationPlugin extends Plugin {
             if (launchIntent != null) {
                 launchIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 builder.setContentIntent(
-                        PendingIntent.getActivity(
-                                getContext(),
-                                0,
-                                launchIntent,
-                                PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE
-                        )
+                    PendingIntent.getActivity(
+                        getContext(),
+                        0,
+                        launchIntent,
+                        PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE
+                    )
                 );
             }
 
@@ -177,8 +165,7 @@ public class BackgroundLocationPlugin extends Plugin {
             call.reject("Missing id.");
             return;
         }
-        if (service != null)
-            service.removeWatcher(callbackId);
+        if (service != null) service.removeWatcher(callbackId);
         PluginCall savedCall = bridge.getSavedCall(callbackId);
         if (savedCall != null) {
             savedCall.release(bridge);
@@ -202,8 +189,8 @@ public class BackgroundLocationPlugin extends Plugin {
             return lm != null && lm.isLocationEnabled();
         } else {
             return (
-                    Settings.Secure.getInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE, Settings.Secure.LOCATION_MODE_OFF) !=
-                            Settings.Secure.LOCATION_MODE_OFF
+                Settings.Secure.getInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE, Settings.Secure.LOCATION_MODE_OFF) !=
+                Settings.Secure.LOCATION_MODE_OFF
             );
         }
     }
@@ -271,9 +258,9 @@ public class BackgroundLocationPlugin extends Plugin {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationManager manager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
             NotificationChannel channel = new NotificationChannel(
-                    BackgroundLoctionService.class.getPackage().getName(),
-                    getAppString("capacitor_background_geolocation_notification_channel_name", "Background Tracking"),
-                    NotificationManager.IMPORTANCE_DEFAULT
+                BackgroundLoctionService.class.getPackage().getName(),
+                getAppString("capacitor_background_geolocation_notification_channel_name", "Background Tracking"),
+                NotificationManager.IMPORTANCE_DEFAULT
             );
             channel.enableLights(false);
             channel.enableVibration(false);
@@ -282,25 +269,25 @@ public class BackgroundLocationPlugin extends Plugin {
         }
 
         this.getContext()
-                .bindService(
-                        new Intent(this.getContext(), BackgroundLoctionService.class),
-                        new ServiceConnection() {
-                            @Override
-                            public void onServiceConnected(ComponentName name, IBinder binder) {
-                                BackgroundLocationPlugin.this.service = (BackgroundLoctionService.LocalBinder) binder;
-                            }
+            .bindService(
+                new Intent(this.getContext(), BackgroundLoctionService.class),
+                new ServiceConnection() {
+                    @Override
+                    public void onServiceConnected(ComponentName name, IBinder binder) {
+                        BackgroundLocationPlugin.this.service = (BackgroundLoctionService.LocalBinder) binder;
+                    }
 
-                            @Override
-                            public void onServiceDisconnected(ComponentName name) {
-                                Log.e("disconnected", name.getPackageName());
-                            }
-                        },
-                        Context.BIND_AUTO_CREATE
-                );
+                    @Override
+                    public void onServiceDisconnected(ComponentName name) {
+                        Log.e("disconnected", name.getPackageName());
+                    }
+                },
+                Context.BIND_AUTO_CREATE
+            );
 
         LocalBroadcastManager
-                .getInstance(this.getContext())
-                .registerReceiver(new ServiceReceiver(), new IntentFilter(BackgroundLoctionService.ACTION_BROADCAST));
+            .getInstance(this.getContext())
+            .registerReceiver(new ServiceReceiver(), new IntentFilter(BackgroundLoctionService.ACTION_BROADCAST));
     }
 
     @Override

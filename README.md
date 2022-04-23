@@ -1,6 +1,6 @@
 # background-location-update
 
-Gives the user location update in background
+A Capacitor plugin which lets you receive location updates even while the app is backgrounded.
 
 ## Install
 
@@ -13,7 +13,6 @@ npx cap sync
 
 <docgen-index>
 
-* [`echo(...)`](#echo)
 * [`addWatcher(...)`](#addwatcher)
 * [`removeWatcher(...)`](#removewatcher)
 * [`openSettings()`](#opensettings)
@@ -23,21 +22,6 @@ npx cap sync
 
 <docgen-api>
 <!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
-
-### echo(...)
-
-```typescript
-echo(options: { value: string; }) => Promise<{ value: string; }>
-```
-
-| Param         | Type                            |
-| ------------- | ------------------------------- |
-| **`options`** | <code>{ value: string; }</code> |
-
-**Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
-
---------------------
-
 
 ### addWatcher(...)
 
