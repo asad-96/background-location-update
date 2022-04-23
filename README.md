@@ -15,6 +15,75 @@ npx cap sync
 import { BackgroundLocation, Location } from 'background-location-update';
 ```
 
+### iOS
+
+Add the following keys to `Info.plist.`:
+
+```xml
+<dict>
+  ...
+  <key>NSLocationWhenInUseUsageDescription</key>
+  <string>We need to track your location</string>
+  <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+  <string>We need to track your location while your device is locked.</string>
+  <key>UIBackgroundModes</key>
+  <array>
+    <string>location</string>
+  </array>
+  ...
+</dict>
+```
+
+### Android
+
+Configure `AndroidManifest.xml`:
+
+```xml
+<manifest>
+    <application>
+        <service
+            android:name="com.equimaps.capacitor_background_geolocation.BackgroundGeolocationService"
+            android:enabled="true"
+            android:exported="true"
+            android:foregroundServiceType="location" />
+    </application>
+
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-feature android:name="android.hardware.location.gps" />
+</manifest>
+```
+
+Configration specific to Android can be made in `strings.xml`:
+
+```xml
+<resources>
+    <!--
+        The channel name for the background notification. This will be visible
+        when the user presses & holds the notification. It defaults to
+        "Background Tracking".
+    -->
+    <string name="capacitor_background_geolocation_notification_channel_name">
+        Background Tracking
+    </string>
+
+    <!--
+        The icon to use for the background notification. Note the absence of a
+        leading "@". It defaults to "mipmap/ic_launcher", the app's launch icon.
+
+        If a raster image is used to generate the icon (as opposed to a vector
+        image), it must have a transparent background. To make sure your image
+        is compatible, select "Notification Icons" as the Icon Type when
+        creating the image asset in Android Studio.
+    -->
+    <string name="capacitor_background_geolocation_notification_icon">
+        drawable/ic_tracking
+    </string>
+</resources>
+
+```
+
 ## API
 
 <docgen-index>
