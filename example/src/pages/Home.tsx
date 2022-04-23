@@ -56,14 +56,18 @@ const HomePage: React.FunctionComponent<IHomePageProps> = props => {
         async function callback(location) {
           last_location = location;
           if (location !== undefined) {
-            await setDoc(
-              doc(
-                db,
-                'locations_fg/',
-                Math.floor(Date.now() / 1000).toString(),
-              ),
-              location,
-            );
+            try {
+              await setDoc(
+                doc(
+                  db,
+                  'locations_fg/',
+                  Math.floor(Date.now() / 1000).toString(),
+                ),
+                location,
+              );
+            } catch (error) {
+              console.error(error);
+            }
           }
         },
       ).then(function retain_callback_id(the_id) {
