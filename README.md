@@ -11,8 +11,9 @@ npx cap sync
 
 ## Usage
 
-````typescript
+```typescript
 import { BackgroundLocation, Location } from 'background-location-update';
+```
 
 ## API
 
@@ -91,7 +92,7 @@ watcher_callback(location, error) {
 
     return console.log(location);
 }
-````
+```
 
 | Param          | Type                                                                                                                      |
 | -------------- | ------------------------------------------------------------------------------------------------------------------------- |
