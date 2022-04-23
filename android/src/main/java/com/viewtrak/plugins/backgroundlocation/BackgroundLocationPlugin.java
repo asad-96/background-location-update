@@ -177,7 +177,8 @@ public class BackgroundLocationPlugin extends Plugin {
             call.reject("Missing id.");
             return;
         }
-        service.removeWatcher(callbackId);
+        if (service != null)
+            service.removeWatcher(callbackId);
         PluginCall savedCall = bridge.getSavedCall(callbackId);
         if (savedCall != null) {
             savedCall.release(bridge);

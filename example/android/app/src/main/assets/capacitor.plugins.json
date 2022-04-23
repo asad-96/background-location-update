@@ -1,13 +1,5 @@
 [
 	{
-		"pkg": "@capacitor/camera",
-		"classpath": "com.capacitorjs.plugins.camera.CameraPlugin"
-	},
-	{
-		"pkg": "@capacitor/splash-screen",
-		"classpath": "com.capacitorjs.plugins.splashscreen.SplashScreenPlugin"
-	},
-	{
 		"pkg": "background-location-update",
 		"classpath": "com.viewtrak.plugins.backgroundlocation.BackgroundLocationPlugin"
 	}

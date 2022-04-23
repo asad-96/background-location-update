@@ -1,7 +1,10 @@
 /*jslint browser, devel */
 /*global capacitorExports */
+
 const { registerPlugin } = capacitorExports;
 const BackgroundLocation = registerPlugin('BackgroundLocation');
+
+let registration = null;
 
 const started = Date.now();
 const watcher_colours = {};
@@ -16,7 +19,53 @@ const colours = [
   'cyan',
 ];
 
+// const firebaseConfig = {
+//   apiKey: 'AIzaSyBBCFZGcYIE_crg4gFEo8IttTzV6n9sUU8',
+//   authDomain: 'fbapp-c9bdd.firebaseapp.com',
+//   databaseURL: 'https://fbapp-c9bdd.firebaseio.com',
+//   projectId: 'fbapp-c9bdd',
+//   storageBucket: 'fbapp-c9bdd.appspot.com',
+//   messagingSenderId: '991919161758',
+//   appId: '1:991919161758:web:b3c008543ae84b406f568f',
+// };
+
+// // // Initialize Firebase
+// const app = window.initializeApp(firebaseConfig);
+
+function logFirebase() {
+  console.log(window);
+}
+
+function register_service_worker() {
+  if ('serviceWorker' in navigator) {
+    window.navigator.serviceWorker
+      .register('./sworker.js')
+      .then(res => {
+        registration = res;
+        console.log('Service worker successfully registered.');
+      })
+      .catch(err => {
+        console.error('Could not register service worker.');
+      });
+  }
+}
+
+function unregister_service_worker() {
+  navigator.serviceWorker
+    .getRegistrations()
+    .then(registrations => {
+      registrations.forEach(registration => {
+        registration.unregister();
+        console.log('Service worker unregistered.');
+      });
+    })
+    .catch(err => {
+      console.error('Could not unregister service worker.');
+    });
+}
+
 function log_for_watcher(text, time, colour = 'gray') {
+  console.log(text);
   const li = document.createElement('li');
   li.style.color = colour;
   li.innerText = String(Math.floor((time - started) / 1000)) + ':' + text;

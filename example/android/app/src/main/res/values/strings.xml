@@ -4,6 +4,4 @@
     <string name="title_activity_main">example</string>
     <string name="package_name">com.example.app</string>
     <string name="custom_url_scheme">com.example.app</string>
-    <string name="capacitor_background_geolocation_notification_channel_name">GPS</string>
-    <string name="capacitor_background_geolocation_notification_icon">drawable/ic_json</string>
 </resources>

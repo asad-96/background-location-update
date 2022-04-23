@@ -35,7 +35,9 @@
     <!-- Guess: -->
     <!-- <button onclick="guess(50)">50ms</button> -->
     <button onclick="guess(100)">Guess</button>
-    <!-- <button onclick="guess(250)">250ms</button> -->
+    <!-- <button onclick="register_service_worker()">Register worker</button>
+    <button onclick="unregister_service_worker()">UnRegister worker</button> -->
+    <button onclick="logFirebase()">Log Firebase</button>
     <!-- <button onclick="guess(1000)">1000ms</button> -->
 
     <ul id="log">
@@ -43,6 +45,22 @@
     </ul>
 
     <script src="capacitor.js"></script>
+    <!-- Insert this script at the bottom of the HTML, but before you use any Firebase services -->
+    <!-- <script type="module">
+      // import {app} from './firebase.js';
+      import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
+
+      // // If you enabled Analytics in your project, add the Firebase SDK for Google Analytics
+      // // import { analytics } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-analytics.js';
+
+      // // Add Firebase products that you want to use
+      // import { auth } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
+      // import { firestore } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js';
+      // window.app = app;
+      // export { initializeApp, firestore };
+    </script> -->
+    <script src="firebase/main.js"></script>
     <script src="main.js"></script>
+    <!-- <script src="sw.js"></script> -->
   </body>
 </html>
