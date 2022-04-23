@@ -42,7 +42,7 @@ Configure `AndroidManifest.xml`:
 <manifest>
     <application>
         <service
-            android:name="com.equimaps.capacitor_background_geolocation.BackgroundGeolocationService"
+            android:name="com.viewtrak.plugins.backgroundlocation.BackgroundLoctionService"
             android:enabled="true"
             android:exported="true"
             android:foregroundServiceType="location" />
@@ -64,7 +64,7 @@ Configration specific to Android can be made in `strings.xml`:
         when the user presses & holds the notification. It defaults to
         "Background Tracking".
     -->
-    <string name="capacitor_background_geolocation_notification_channel_name">
+    <string name="capacitor_background_location_notification_channel_name">
         Background Tracking
     </string>
 
@@ -77,7 +77,7 @@ Configration specific to Android can be made in `strings.xml`:
         is compatible, select "Notification Icons" as the Icon Type when
         creating the image asset in Android Studio.
     -->
-    <string name="capacitor_background_geolocation_notification_icon">
+    <string name="capacitor_background_location_notification_icon">
         drawable/ic_tracking
     </string>
 </resources>

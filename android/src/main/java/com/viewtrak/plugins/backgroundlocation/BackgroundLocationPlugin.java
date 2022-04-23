@@ -45,8 +45,6 @@ public class BackgroundLocationPlugin extends Plugin {
     private PluginCall callPendingPermissions = null;
     private Boolean stoppedWithoutPermissions = false;
 
-    private BackgroundLocation implementation = new BackgroundLocation();
-
     @PluginMethod(returnType = PluginMethod.RETURN_CALLBACK)
     public void addWatcher(final PluginCall call) {
         if (service == null) {
@@ -259,7 +257,7 @@ public class BackgroundLocationPlugin extends Plugin {
             NotificationManager manager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
             NotificationChannel channel = new NotificationChannel(
                 BackgroundLoctionService.class.getPackage().getName(),
-                getAppString("capacitor_background_geolocation_notification_channel_name", "Background Tracking"),
+                getAppString("capacitor_background_location_notification_channel_name", "Background Tracking"),
                 NotificationManager.IMPORTANCE_DEFAULT
             );
             channel.enableLights(false);
