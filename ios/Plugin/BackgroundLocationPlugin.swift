@@ -71,15 +71,7 @@ class Watcher {
 
 @objc(BackgroundLocationPlugin)
 public class BackgroundLocationPlugin: CAPPlugin, CLLocationManagerDelegate {
-    private let implementation = BackgroundLocation()
     private var watchers = [Watcher]()
-
-    @objc func echo(_ call: CAPPluginCall) {
-        let value = call.getString("value") ?? ""
-        call.resolve([
-            "value": implementation.echo(value)
-        ])
-    }
     
     @objc public override func load() {
         UIDevice.current.isBatteryMonitoringEnabled = true
