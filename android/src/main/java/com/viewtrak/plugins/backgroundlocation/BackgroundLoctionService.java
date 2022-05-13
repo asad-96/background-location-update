@@ -93,11 +93,11 @@ public class BackgroundLoctionService extends Service {
     public class LocalBinder extends Binder {
 
         void addWatcher(
-            final String id,
-            Notification backgroundNotification,
-            Notification onlineNotification,
-            Notification offlineNotification,
-            float distanceFilter
+                final String id,
+                Notification backgroundNotification,
+                Notification onlineNotification,
+                Notification offlineNotification,
+                float distanceFilter
         ) {
             FusedLocationProviderClient client = LocationServices.getFusedLocationProviderClient(BackgroundLoctionService.this);
             LocationRequest locationRequest = new LocationRequest();
@@ -121,11 +121,11 @@ public class BackgroundLoctionService extends Service {
                         if (watcher.onlineNotification != null) ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(
                                 NOTIFICATION_ID,
                                 watcher.onlineNotification
-                            );
+                        );
                     } else if (watcher.offlineNotification != null) ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(
                             NOTIFICATION_ID,
                             watcher.offlineNotification
-                        );
+                    );
                 }
 
                 @Override
@@ -146,10 +146,10 @@ public class BackgroundLoctionService extends Service {
             watchers.add(watcher);
 
             if (
-                ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED
+                    ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) !=
+                            PackageManager.PERMISSION_GRANTED &&
+                            ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) !=
+                                    PackageManager.PERMISSION_GRANTED
             ) {
                 // TODO: Consider calling
                 //    ActivityCompat#requestPermissions
@@ -169,7 +169,9 @@ public class BackgroundLoctionService extends Service {
                     watcher.client.removeLocationUpdates(watcher.locationCallback);
                     watchers.remove(watcher);
                     if (getNotification() == null) {
+                        ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(NOTIFICATION_ID, watcher.backgroundNotification);
                         stopForeground(true);
+                        ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).cancel(NOTIFICATION_ID);
                     }
                     return;
                 }
@@ -182,10 +184,10 @@ public class BackgroundLoctionService extends Service {
             for (Watcher watcher : watchers) {
                 watcher.client.removeLocationUpdates(watcher.locationCallback);
                 if (
-                    ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) !=
-                    PackageManager.PERMISSION_GRANTED &&
-                    ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) !=
-                    PackageManager.PERMISSION_GRANTED
+                        ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) !=
+                                PackageManager.PERMISSION_GRANTED &&
+                                ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) !=
+                                        PackageManager.PERMISSION_GRANTED
                 ) {
                     // TODO: Consider calling
                     //    ActivityCompat#requestPermissions

@@ -19,6 +19,8 @@ import android.os.Build;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.util.Log;
+import android.widget.RemoteViews;
+
 import androidx.core.app.ActivityCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.getcapacitor.JSObject;
@@ -35,10 +37,10 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import org.json.JSONObject;
 
 @CapacitorPlugin(
-    name = "BackgroundLocation",
-    permissions = {
-        @Permission(alias = "location", strings = { Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION })
-    }
+        name = "BackgroundLocation",
+        permissions = {
+                @Permission(alias = "location", strings = { Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION })
+        }
 )
 public class BackgroundLocationPlugin extends Plugin {
 
@@ -66,10 +68,10 @@ public class BackgroundLocationPlugin extends Plugin {
         }
         if (call.getBoolean("stale", false)) {
             if (
-                ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED
+                    ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) !=
+                            PackageManager.PERMISSION_GRANTED &&
+                            ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) !=
+                                    PackageManager.PERMISSION_GRANTED
             ) {
                 // TODO: Consider calling
                 //    ActivityCompat#requestPermissions
@@ -81,19 +83,19 @@ public class BackgroundLocationPlugin extends Plugin {
                 return;
             }
             LocationServices
-                .getFusedLocationProviderClient(getContext())
-                .getLastLocation()
-                .addOnSuccessListener(
-                    getActivity(),
-                    new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location location) {
-                            if (location != null) {
-                                call.resolve(formatLocation(location));
+                    .getFusedLocationProviderClient(getContext())
+                    .getLastLocation()
+                    .addOnSuccessListener(
+                            getActivity(),
+                            new OnSuccessListener<Location>() {
+                                @Override
+                                public void onSuccess(Location location) {
+                                    if (location != null) {
+                                        call.resolve(formatLocation(location));
+                                    }
+                                }
                             }
-                        }
-                    }
-                );
+                    );
         }
         Notification backgroundNotification = null;
         Notification onlineNotification = null;
@@ -102,33 +104,46 @@ public class BackgroundLocationPlugin extends Plugin {
         if (backgroundMessage != null) {
             backgroundNotification = makeNotification(call, backgroundMessage).build();
 
+            // Online Notification
+            // Get the layouts to use in the custom notification
+//            RemoteViews notificationLayout = new RemoteViews(getContext().getPackageName(), R.layout.notification_user_status);
+
+
             Intent onlineIntent = new Intent(getContext(), BackgroundLoctionService.class);
-            onlineIntent.putExtra("STATUS", "online");
-            onlineIntent.putExtra("ID", call.getCallbackId());
+            onlineIntent.putExtra("STATUS","online");
+            onlineIntent.putExtra("ID",call.getCallbackId());
 
             PendingIntent pendingIntent1 = PendingIntent.getService(getContext(), 7, onlineIntent, 0);
-            onlineNotification =
-                makeNotification(call, backgroundMessage).addAction(R.drawable.ic_transparent, "Mark Online", pendingIntent1).build();
+            onlineNotification = makeNotification(call, backgroundMessage)
+                    .addAction(R.drawable.ic_transparent,"Mark Online", pendingIntent1)
+                    .build();
 
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//                onlineNotification = makeNotification(call, backgroundMessage)
+//                        .setCustomContentView(notificationLayout)
+//                        .build();
+//            }
+
+            // Offline Notification
             Intent offlineIntent = new Intent(getContext(), BackgroundLoctionService.class);
             offlineIntent.putExtra("STATUS", "offline");
             offlineIntent.putExtra("ID", call.getCallbackId());
 
             offlineNotification =
-                makeNotification(call, backgroundMessage)
-                    .addAction(R.drawable.ic_transparent, "Mark Offline", PendingIntent.getService(getContext(), 7, offlineIntent, 0))
-                    .build();
+                    makeNotification(call, backgroundMessage)
+                            .addAction(R.drawable.ic_transparent, "Mark Offline", PendingIntent.getService(getContext(), 7, offlineIntent, 0))
+                            .build();
             //            PendingIntent pendingIntent2 = PendingIntent.getBroadcast(getContext(), 7, onlineIntent, 0);
             //
             //            builder.setActions(new Notification.Action(R.drawable.ic_transparent,"Mark Online", pendingIntent1));
 
         }
         service.addWatcher(
-            call.getCallbackId(),
-            backgroundNotification,
-            onlineNotification,
-            offlineNotification,
-            call.getFloat("distanceFilter", 0f)
+                call.getCallbackId(),
+                backgroundNotification,
+                onlineNotification,
+                offlineNotification,
+                call.getFloat("distanceFilter", 0f)
         );
     }
 
@@ -180,8 +195,8 @@ public class BackgroundLocationPlugin extends Plugin {
             return lm != null && lm.isLocationEnabled();
         } else {
             return (
-                Settings.Secure.getInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE, Settings.Secure.LOCATION_MODE_OFF) !=
-                Settings.Secure.LOCATION_MODE_OFF
+                    Settings.Secure.getInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE, Settings.Secure.LOCATION_MODE_OFF) !=
+                            Settings.Secure.LOCATION_MODE_OFF
             );
         }
     }
@@ -260,9 +275,9 @@ public class BackgroundLocationPlugin extends Plugin {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationManager manager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
             NotificationChannel channel = new NotificationChannel(
-                BackgroundLoctionService.class.getPackage().getName(),
-                getAppString("capacitor_background_location_notification_channel_name", "Background Tracking"),
-                NotificationManager.IMPORTANCE_DEFAULT
+                    BackgroundLoctionService.class.getPackage().getName(),
+                    getAppString("capacitor_background_location_notification_channel_name", "Background Tracking"),
+                    NotificationManager.IMPORTANCE_DEFAULT
             );
             channel.enableLights(false);
             channel.enableVibration(false);
@@ -271,29 +286,29 @@ public class BackgroundLocationPlugin extends Plugin {
         }
 
         this.getContext()
-            .bindService(
-                new Intent(this.getContext(), BackgroundLoctionService.class),
-                new ServiceConnection() {
-                    @Override
-                    public void onServiceConnected(ComponentName name, IBinder binder) {
-                        BackgroundLocationPlugin.this.service = (BackgroundLoctionService.LocalBinder) binder;
-                    }
+                .bindService(
+                        new Intent(this.getContext(), BackgroundLoctionService.class),
+                        new ServiceConnection() {
+                            @Override
+                            public void onServiceConnected(ComponentName name, IBinder binder) {
+                                BackgroundLocationPlugin.this.service = (BackgroundLoctionService.LocalBinder) binder;
+                            }
 
-                    @Override
-                    public void onServiceDisconnected(ComponentName name) {
-                        Log.e("disconnected", name.getPackageName());
-                    }
-                },
-                Context.BIND_AUTO_CREATE
-            );
-
-        LocalBroadcastManager
-            .getInstance(this.getContext())
-            .registerReceiver(new ServiceReceiver(), new IntentFilter(BackgroundLoctionService.ACTION_BROADCAST));
+                            @Override
+                            public void onServiceDisconnected(ComponentName name) {
+                                Log.e("disconnected", name.getPackageName());
+                            }
+                        },
+                        Context.BIND_AUTO_CREATE
+                );
 
         LocalBroadcastManager
-            .getInstance(this.getContext())
-            .registerReceiver(new StatusReceiver(), new IntentFilter(BackgroundLoctionService.STATUS_BROADCAST));
+                .getInstance(this.getContext())
+                .registerReceiver(new ServiceReceiver(), new IntentFilter(BackgroundLoctionService.ACTION_BROADCAST));
+
+        LocalBroadcastManager
+                .getInstance(this.getContext())
+                .registerReceiver(new StatusReceiver(), new IntentFilter(BackgroundLoctionService.STATUS_BROADCAST));
     }
 
     @Override
@@ -326,11 +341,11 @@ public class BackgroundLocationPlugin extends Plugin {
 
     private Notification.Builder makeNotification(final PluginCall call, String backgroundMessage) {
         Notification.Builder builder = new Notification.Builder(getContext())
-            .setContentTitle(call.getString("backgroundTitle", "Using your location"))
-            .setContentText(backgroundMessage)
-            .setOngoing(true)
-            .setPriority(Notification.PRIORITY_HIGH)
-            .setWhen(System.currentTimeMillis());
+                .setContentTitle(call.getString("backgroundTitle", "Using your location"))
+                .setContentText(backgroundMessage)
+                .setOngoing(true)
+                .setPriority(Notification.PRIORITY_HIGH)
+                .setWhen(System.currentTimeMillis());
 
         try {
             String name = getAppString("capacitor_background_location_notification_icon", "mipmap/ic_launcher");
@@ -347,7 +362,7 @@ public class BackgroundLocationPlugin extends Plugin {
         if (launchIntent != null) {
             launchIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             builder.setContentIntent(
-                PendingIntent.getActivity(getContext(), 0, launchIntent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE)
+                    PendingIntent.getActivity(getContext(), 0, launchIntent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE)
             );
         }
 
