@@ -153,8 +153,9 @@ const HomePage: React.FunctionComponent<IHomePageProps> = props => {
         },
         type
           ? {
-              backgroundTitle: 'Tracking your location, senõr.',
-              backgroundMessage: 'Cancel to prevent battery drain.',
+              backgroundTitle: 'Tracking your location, Test title',
+              backgroundMessage:
+                'Cancel to prevent battery drain. Test message',
             }
           : {
               distanceFilter: 10,

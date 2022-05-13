@@ -96,47 +96,40 @@ public class BackgroundLocationPlugin extends Plugin {
                 );
         }
         Notification backgroundNotification = null;
+        Notification onlineNotification = null;
+        Notification offlineNotification = null;
         String backgroundMessage = call.getString("backgroundMessage");
         if (backgroundMessage != null) {
-            Notification.Builder builder = new Notification.Builder(getContext())
-                .setContentTitle(call.getString("backgroundTitle", "Using your location"))
-                .setContentText(backgroundMessage)
-                .setOngoing(true)
-                .setPriority(Notification.PRIORITY_HIGH)
-                .setWhen(System.currentTimeMillis());
+            backgroundNotification = makeNotification(call, backgroundMessage).build();
 
-            try {
-                String name = getAppString("capacitor_background_location_notification_icon", "mipmap/ic_launcher");
-                String[] parts = name.split("/");
-                // It is actually necessary to set a valid icon for the notification to behave
-                // correctly when tapped. If there is no icon specified, tapping it will open the
-                // app's settings, rather than bringing the application to the foreground.
-                builder.setSmallIcon(getAppResourceIdentifier(parts[1], parts[0]));
-            } catch (Exception e) {
-                Logger.error("Could not set notification icon", e);
-            }
+            Intent onlineIntent = new Intent(getContext(), BackgroundLoctionService.class);
+            onlineIntent.putExtra("STATUS", "online");
+            onlineIntent.putExtra("ID", call.getCallbackId());
 
-            Intent launchIntent = getContext().getPackageManager().getLaunchIntentForPackage(getContext().getPackageName());
-            if (launchIntent != null) {
-                launchIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                builder.setContentIntent(
-                    PendingIntent.getActivity(
-                        getContext(),
-                        0,
-                        launchIntent,
-                        PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE
-                    )
-                );
-            }
+            PendingIntent pendingIntent1 = PendingIntent.getService(getContext(), 7, onlineIntent, 0);
+            onlineNotification =
+                makeNotification(call, backgroundMessage).addAction(R.drawable.ic_transparent, "Mark Online", pendingIntent1).build();
 
-            // Set the Channel ID for Android O.
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                builder.setChannelId(BackgroundLoctionService.class.getPackage().getName());
-            }
+            Intent offlineIntent = new Intent(getContext(), BackgroundLoctionService.class);
+            offlineIntent.putExtra("STATUS", "offline");
+            offlineIntent.putExtra("ID", call.getCallbackId());
 
-            backgroundNotification = builder.build();
+            offlineNotification =
+                makeNotification(call, backgroundMessage)
+                    .addAction(R.drawable.ic_transparent, "Mark Offline", PendingIntent.getService(getContext(), 7, offlineIntent, 0))
+                    .build();
+            //            PendingIntent pendingIntent2 = PendingIntent.getBroadcast(getContext(), 7, onlineIntent, 0);
+            //
+            //            builder.setActions(new Notification.Action(R.drawable.ic_transparent,"Mark Online", pendingIntent1));
+
         }
-        service.addWatcher(call.getCallbackId(), backgroundNotification, call.getFloat("distanceFilter", 0f));
+        service.addWatcher(
+            call.getCallbackId(),
+            backgroundNotification,
+            onlineNotification,
+            offlineNotification,
+            call.getFloat("distanceFilter", 0f)
+        );
     }
 
     // Sends messages to the service.
@@ -190,6 +183,17 @@ public class BackgroundLocationPlugin extends Plugin {
                 Settings.Secure.getInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE, Settings.Secure.LOCATION_MODE_OFF) !=
                 Settings.Secure.LOCATION_MODE_OFF
             );
+        }
+    }
+
+    // Receives ONLINE OFFLINE status from the service.
+    private class StatusReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String id = intent.getStringExtra("id");
+            String status = intent.getStringExtra("STATUS");
+            PluginCall call = bridge.getSavedCall(id);
         }
     }
 
@@ -286,6 +290,10 @@ public class BackgroundLocationPlugin extends Plugin {
         LocalBroadcastManager
             .getInstance(this.getContext())
             .registerReceiver(new ServiceReceiver(), new IntentFilter(BackgroundLoctionService.ACTION_BROADCAST));
+
+        LocalBroadcastManager
+            .getInstance(this.getContext())
+            .registerReceiver(new StatusReceiver(), new IntentFilter(BackgroundLoctionService.STATUS_BROADCAST));
     }
 
     @Override
@@ -314,5 +322,40 @@ public class BackgroundLocationPlugin extends Plugin {
             service.stopService();
         }
         super.handleOnDestroy();
+    }
+
+    private Notification.Builder makeNotification(final PluginCall call, String backgroundMessage) {
+        Notification.Builder builder = new Notification.Builder(getContext())
+            .setContentTitle(call.getString("backgroundTitle", "Using your location"))
+            .setContentText(backgroundMessage)
+            .setOngoing(true)
+            .setPriority(Notification.PRIORITY_HIGH)
+            .setWhen(System.currentTimeMillis());
+
+        try {
+            String name = getAppString("capacitor_background_location_notification_icon", "mipmap/ic_launcher");
+            String[] parts = name.split("/");
+            // It is actually necessary to set a valid icon for the notification to behave
+            // correctly when tapped. If there is no icon specified, tapping it will open the
+            // app's settings, rather than bringing the application to the foreground.
+            builder.setSmallIcon(getAppResourceIdentifier(parts[1], parts[0]));
+        } catch (Exception e) {
+            Logger.error("Could not set notification icon", e);
+        }
+
+        Intent launchIntent = getContext().getPackageManager().getLaunchIntentForPackage(getContext().getPackageName());
+        if (launchIntent != null) {
+            launchIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            builder.setContentIntent(
+                PendingIntent.getActivity(getContext(), 0, launchIntent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE)
+            );
+        }
+
+        // Set the Channel ID for Android O.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            builder.setChannelId(BackgroundLoctionService.class.getPackage().getName());
+        }
+
+        return builder;
     }
 }
