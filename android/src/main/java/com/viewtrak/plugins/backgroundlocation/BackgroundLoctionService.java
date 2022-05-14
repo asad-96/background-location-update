@@ -185,11 +185,13 @@ public class BackgroundLoctionService extends Service {
                 if (watcher.id.equals(id)) {
                     watcher.client.removeLocationUpdates(watcher.locationCallback);
                     watchers.remove(watcher);
-                    if (getNotification() == null) {
+                    if(watcher.backgroundNotification != null)
                         ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(NOTIFICATION_ID, watcher.backgroundNotification);
+                    if (getNotification() == null) {
                         stopForeground(true);
-                        ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).cancel(NOTIFICATION_ID);
                     }
+                    if(watcher.backgroundNotification != null)
+                        ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).cancel(NOTIFICATION_ID);
                     return;
                 }
             }
