@@ -41,6 +41,10 @@ public class BackgroundLoctionService extends Service {
 
     private final IBinder binder = new LocalBinder();
 
+    public Notification onlineNotification;
+    public Notification offlineNotification;
+
+
     // Must be unique for this application.
     private static final int NOTIFICATION_ID = 28351;
 
@@ -55,6 +59,16 @@ public class BackgroundLoctionService extends Service {
             LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(i);
 
             isOnline = !isOnline;
+
+            if (isOnline) {
+                if (onlineNotification != null) ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(
+                        NOTIFICATION_ID,
+                        onlineNotification
+                );
+            } else if (offlineNotification != null) ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(
+                    NOTIFICATION_ID,
+                    offlineNotification
+            );
         }
 
         return super.onStartCommand(intent, flags, startId);
@@ -105,6 +119,9 @@ public class BackgroundLoctionService extends Service {
             locationRequest.setInterval(1000);
             locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
             locationRequest.setSmallestDisplacement(distanceFilter);
+
+            BackgroundLoctionService.this.onlineNotification = onlineNotification;
+            BackgroundLoctionService.this.offlineNotification = offlineNotification;
 
             Watcher watcher = new Watcher();
 
