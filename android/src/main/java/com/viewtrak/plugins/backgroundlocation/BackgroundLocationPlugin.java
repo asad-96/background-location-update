@@ -108,34 +108,35 @@ public class BackgroundLocationPlugin extends Plugin {
             // Get the layouts to use in the custom notification
 //            RemoteViews notificationLayout = new RemoteViews(getContext().getPackageName(), R.layout.notification_user_status);
 
+            Boolean onlineNotificationAction = call.getBoolean("onlineNotificationAction", false);
+            if (onlineNotificationAction) {
+                Intent onlineIntent = new Intent(getContext(), BackgroundLoctionService.class);
+                onlineIntent.putExtra("STATUS","online");
+                onlineIntent.putExtra("ID",call.getCallbackId());
 
-            Intent onlineIntent = new Intent(getContext(), BackgroundLoctionService.class);
-            onlineIntent.putExtra("STATUS","online");
-            onlineIntent.putExtra("ID",call.getCallbackId());
-
-            PendingIntent pendingIntent1 = PendingIntent.getService(getContext(), 7, onlineIntent, 0);
-            onlineNotification = makeNotification(call, backgroundMessage)
-                    .addAction(android.R.drawable.presence_offline,"Mark Online", pendingIntent1)
-                    .build();
-
+                PendingIntent pendingIntent1 = PendingIntent.getService(getContext(), 7, onlineIntent, 0);
+                onlineNotification = makeNotification(call, backgroundMessage)
+                        .addAction(android.R.drawable.presence_offline,"Mark Online", pendingIntent1)
+                        .build();
 //            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 //                onlineNotification = makeNotification(call, backgroundMessage)
 //                        .setCustomContentView(notificationLayout)
 //                        .build();
 //            }
 
-            // Offline Notification
-            Intent offlineIntent = new Intent(getContext(), BackgroundLoctionService.class);
-            offlineIntent.putExtra("STATUS", "offline");
-            offlineIntent.putExtra("ID", call.getCallbackId());
+                // Offline Notification
+                Intent offlineIntent = new Intent(getContext(), BackgroundLoctionService.class);
+                offlineIntent.putExtra("STATUS", "offline");
+                offlineIntent.putExtra("ID", call.getCallbackId());
 
-            offlineNotification =
-                    makeNotification(call, backgroundMessage)
-                            .addAction(android.R.drawable.presence_online, "Mark Offline", PendingIntent.getService(getContext(), 7, offlineIntent, 0))
-                            .build();
-            //            PendingIntent pendingIntent2 = PendingIntent.getBroadcast(getContext(), 7, onlineIntent, 0);
-            //
-            //            builder.setActions(new Notification.Action(R.drawable.ic_transparent,"Mark Online", pendingIntent1));
+                offlineNotification =
+                        makeNotification(call, backgroundMessage)
+                                .addAction(android.R.drawable.presence_online, "Mark Offline", PendingIntent.getService(getContext(), 7, offlineIntent, 0))
+                                .build();
+                //            PendingIntent pendingIntent2 = PendingIntent.getBroadcast(getContext(), 7, onlineIntent, 0);
+                //
+                //            builder.setActions(new Notification.Action(R.drawable.ic_transparent,"Mark Online", pendingIntent1));
+            }
 
         }
         service.addWatcher(
@@ -207,8 +208,10 @@ public class BackgroundLocationPlugin extends Plugin {
         @Override
         public void onReceive(Context context, Intent intent) {
             String id = intent.getStringExtra("id");
-            String status = intent.getStringExtra("STATUS");
-            PluginCall call = bridge.getSavedCall(id);
+            Boolean status = intent.getBooleanExtra("STATUS", false);
+            JSObject ret = new JSObject();
+            ret.put("value", status);
+            notifyListeners("onlineNotificationAction", ret);
         }
     }
 

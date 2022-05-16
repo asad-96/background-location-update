@@ -35,6 +35,13 @@ const HomePage: React.FunctionComponent<IHomePageProps> = props => {
   //     );
   //   }, []);
 
+  BackgroundLocation.addListener(
+    'onlineNotificationAction',
+    (isOnline: any) => {
+      console.log('onlineNotificationAction', isOnline.value);
+    },
+  );
+
   const log_for_watcher = (text: string, time: number | null) => {
     console.log(text + ',' + time);
     // const li = document.createElement('li');
@@ -150,6 +157,9 @@ const HomePage: React.FunctionComponent<IHomePageProps> = props => {
       Object.assign(
         {
           stale: true,
+        },
+        {
+          onlineNotificationAction: true,
         },
         type
           ? {

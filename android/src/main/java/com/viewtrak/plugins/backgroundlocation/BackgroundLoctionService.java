@@ -54,7 +54,7 @@ public class BackgroundLoctionService extends Service {
 
         if (status != null) {
             Intent i = new Intent(STATUS_BROADCAST);
-            i.putExtra("STATUS", status);
+            i.putExtra("STATUS", isOnline);
             i.putExtra("id", intent.getStringExtra("ID"));
             LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(i);
 

@@ -1,3 +1,5 @@
+import type { PluginListenerHandle } from '@capacitor/core';
+
 export interface BackgroundLocationPlugin {
   addWatcher(
     options: WatcherOptions,
@@ -5,6 +7,18 @@ export interface BackgroundLocationPlugin {
   ): Promise<string>;
   removeWatcher(options: { id: string }): Promise<void>;
   openSettings(): Promise<void>;
+
+  /**
+   * Called when onlineNotificationAction set to true in addWatcher() and result received
+   *
+   * Provides onlineNotificationAction result.
+   *
+   * @since 2.0.2
+   */
+  addListener(
+    eventName: 'onlineNotificationAction',
+    listenerFunc: (data: { isOnline: boolean }) => void,
+  ): Promise<PluginListenerHandle> & PluginListenerHandle;
 }
 
 export interface WatcherOptions {
@@ -13,6 +27,7 @@ export interface WatcherOptions {
   requestPermissions?: boolean;
   stale?: boolean;
   distanceFilter?: number;
+  onlineNotificationAction?: boolean;
 }
 
 export interface Location {

@@ -91,6 +91,7 @@ Configration specific to Android can be made in `strings.xml`:
 - [`addWatcher(...)`](#addwatcher)
 - [`removeWatcher(...)`](#removewatcher)
 - [`openSettings()`](#opensettings)
+- [`addListener('onlineNotificationAction', ...)`](#addlisteneronlinenotificationaction)
 - [Interfaces](#interfaces)
 
 </docgen-index>
@@ -136,7 +137,10 @@ await BackgroundLocation.addWatcher(
 
     // The minimum number of metres between subsequent locations. Defaults
     // to 0.
-    distanceFilter: 50
+    distanceFilter: 50,
+    // To add notification action for android platform only. Defaults
+    // to false.
+    onlineNotificationAction: false
     },
     (location, error) => watcher_callback(location, error),
 );
@@ -209,13 +213,14 @@ BackgroundGeolocation.openSettings();
 
 #### WatcherOptions
 
-| Prop                     | Type                 |
-| ------------------------ | -------------------- |
-| **`backgroundMessage`**  | <code>string</code>  |
-| **`backgroundTitle`**    | <code>string</code>  |
-| **`requestPermissions`** | <code>boolean</code> |
-| **`stale`**              | <code>boolean</code> |
-| **`distanceFilter`**     | <code>number</code>  |
+| Prop                           | Type                 |
+| ------------------------------ | -------------------- |
+| **`backgroundMessage`**        | <code>string</code>  |
+| **`backgroundTitle`**          | <code>string</code>  |
+| **`requestPermissions`**       | <code>boolean</code> |
+| **`stale`**                    | <code>boolean</code> |
+| **`distanceFilter`**           | <code>number</code>  |
+| **`onlineNotificationAction`** | <code>boolean</code> |
 
 #### Location
 
