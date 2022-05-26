@@ -13,8 +13,10 @@ import android.location.Location;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
+
 import androidx.core.app.ActivityCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import com.getcapacitor.Logger;
 import com.getcapacitor.PluginCall;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -23,6 +25,7 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+
 import java.util.HashSet;
 
 // A bound and started service that is promoted to a foreground service when
@@ -61,14 +64,16 @@ public class BackgroundLoctionService extends Service {
             isOnline = !isOnline;
 
             if (isOnline) {
-                if (onlineNotification != null) ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(
+                if (onlineNotification != null)
+                    ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(
+                            NOTIFICATION_ID,
+                            onlineNotification
+                    );
+            } else if (offlineNotification != null)
+                ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(
                         NOTIFICATION_ID,
-                        onlineNotification
+                        offlineNotification
                 );
-            } else if (offlineNotification != null) ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(
-                    NOTIFICATION_ID,
-                    offlineNotification
-            );
         }
 
         return super.onStartCommand(intent, flags, startId);
@@ -135,14 +140,16 @@ public class BackgroundLoctionService extends Service {
                     LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
 
                     if (isOnline) {
-                        if (watcher.onlineNotification != null) ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(
+                        if (watcher.onlineNotification != null)
+                            ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(
+                                    NOTIFICATION_ID,
+                                    watcher.onlineNotification
+                            );
+                    } else if (watcher.offlineNotification != null)
+                        ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(
                                 NOTIFICATION_ID,
-                                watcher.onlineNotification
+                                watcher.offlineNotification
                         );
-                    } else if (watcher.offlineNotification != null) ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(
-                            NOTIFICATION_ID,
-                            watcher.offlineNotification
-                    );
                 }
 
                 @Override
@@ -180,17 +187,26 @@ public class BackgroundLoctionService extends Service {
             watcher.client.requestLocationUpdates(watcher.locationRequest, watcher.locationCallback, null);
         }
 
+        void terminateService() {
+            try{
+                stopForeground(true);
+            }catch (Exception e){
+            }
+            stopSelf();
+        }
+
+
         void removeWatcher(String id) {
             for (Watcher watcher : watchers) {
                 if (watcher.id.equals(id)) {
                     watcher.client.removeLocationUpdates(watcher.locationCallback);
                     watchers.remove(watcher);
-                    if(watcher.backgroundNotification != null)
+                    if (watcher.backgroundNotification != null)
                         ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(NOTIFICATION_ID, watcher.backgroundNotification);
                     if (getNotification() == null) {
                         stopForeground(true);
                     }
-                    if(watcher.backgroundNotification != null)
+                    if (watcher.backgroundNotification != null)
                         ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).cancel(NOTIFICATION_ID);
                     return;
                 }

@@ -19,7 +19,6 @@ import android.os.Build;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.util.Log;
-import android.widget.RemoteViews;
 
 import androidx.core.app.ActivityCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -166,6 +165,12 @@ public class BackgroundLocationPlugin extends Plugin {
     }
 
     @PluginMethod
+    public void terminateService() {
+        service.terminateService();
+    }
+
+
+        @PluginMethod
     public void removeWatcher(PluginCall call) {
         String callbackId = call.getString("id");
         if (callbackId == null) {
