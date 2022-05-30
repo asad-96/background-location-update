@@ -115,7 +115,7 @@ public class BackgroundLocationPlugin extends Plugin {
 
                 PendingIntent pendingIntent1 = PendingIntent.getService(getContext(), 7, onlineIntent, 0);
                 onlineNotification = makeNotification(call, backgroundMessage)
-                        .addAction(android.R.drawable.presence_offline,"Mark Online", pendingIntent1)
+                        .addAction(android.R.drawable.presence_offline,call.getString("actionOnline", "Mark Online"), pendingIntent1)
                         .build();
 //            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 //                onlineNotification = makeNotification(call, backgroundMessage)
@@ -130,7 +130,7 @@ public class BackgroundLocationPlugin extends Plugin {
 
                 offlineNotification =
                         makeNotification(call, backgroundMessage)
-                                .addAction(android.R.drawable.presence_online, "Mark Offline", PendingIntent.getService(getContext(), 7, offlineIntent, 0))
+                                .addAction(android.R.drawable.presence_online, call.getString("actionOffline", "Mark Offline"), PendingIntent.getService(getContext(), 7, offlineIntent, 0))
                                 .build();
                 //            PendingIntent pendingIntent2 = PendingIntent.getBroadcast(getContext(), 7, onlineIntent, 0);
                 //
@@ -143,7 +143,8 @@ public class BackgroundLocationPlugin extends Plugin {
                 backgroundNotification,
                 onlineNotification,
                 offlineNotification,
-                call.getFloat("distanceFilter", 0f)
+                call.getFloat("distanceFilter", 0f),
+                call.getBoolean("isOnline", false)
         );
     }
 

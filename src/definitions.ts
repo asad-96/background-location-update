@@ -28,6 +28,9 @@ export interface WatcherOptions {
   stale?: boolean;
   distanceFilter?: number;
   onlineNotificationAction?: boolean;
+  isOnline?: boolean;
+  actionOnline?: string;
+  actionOffline?: string;
 }
 
 export interface Location {

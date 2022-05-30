@@ -128,13 +128,13 @@ public class BackgroundLocationPlugin: CAPPlugin, CLLocationManagerDelegate {
             manager.allowsBackgroundLocationUpdates = background
             self.watchers.append(watcher)
             self.isBackground = background
-            self.isActive = call.getBool("isActive", false)
-//            if (call.getBool("isActive", false)) {
+            self.isActive = call.getBool("isOnline", false)
                 self.notificationTitle = call.getString("backgroundTitle", "App is tracking your location in background")
                 self.notificationSubtitle = call.getString("backgroundMessage", "Mark offline to stop location tracking")
+            if (call.getBool("onlineNotificationAction", false)) {
                 self.stringActionOnline = call.getString("actionOnline", "Mark Online")
                 self.stringActionOffline = call.getString("actionOffline", "Mark Offline")
-//            }
+            }
             if call.getBool("requestPermissions") != false {
                 let status = CLLocationManager.authorizationStatus()
                 if [
@@ -161,12 +161,10 @@ public class BackgroundLocationPlugin: CAPPlugin, CLLocationManagerDelegate {
 
     @objc func showBackgroundLocationNotification() {
         if (!isActive && isBackground) {
-            isActive = true
-            showNotification(notificationTitle, notificationSubtitle, stringActionOffline)
+            showNotification(notificationTitle, notificationSubtitle, stringActionOnline)
         }
         else if (isActive && isBackground) {
-            isActive = false
-            showNotification(notificationTitle, notificationSubtitle, stringActionOnline)
+            showNotification(notificationTitle, notificationSubtitle, stringActionOffline)
         }
     }
     
@@ -319,8 +317,9 @@ extension BackgroundLocationPlugin: UNUserNotificationCenterDelegate {
         public func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
             switch response.actionIdentifier {
             case "active_action":
+                self.isActive = !isActive
                 self.showBackgroundLocationNotification()
-                self.notifyListeners("onlineNotificationAction", data: ["isOnline": self.isActive])
+                self.notifyListeners("onlineNotificationAction", data: ["value": self.isActive])
             default:
                 print("Other Action")
             }

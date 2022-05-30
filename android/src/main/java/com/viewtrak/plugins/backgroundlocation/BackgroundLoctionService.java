@@ -116,7 +116,8 @@ public class BackgroundLoctionService extends Service {
                 Notification backgroundNotification,
                 Notification onlineNotification,
                 Notification offlineNotification,
-                float distanceFilter
+                float distanceFilter,
+                Boolean online
         ) {
             FusedLocationProviderClient client = LocationServices.getFusedLocationProviderClient(BackgroundLoctionService.this);
             LocationRequest locationRequest = new LocationRequest();
@@ -124,6 +125,7 @@ public class BackgroundLoctionService extends Service {
             locationRequest.setInterval(1000);
             locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
             locationRequest.setSmallestDisplacement(distanceFilter);
+            isOnline = online;
 
             BackgroundLoctionService.this.onlineNotification = onlineNotification;
             BackgroundLoctionService.this.offlineNotification = offlineNotification;

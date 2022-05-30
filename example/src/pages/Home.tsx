@@ -38,7 +38,7 @@ const HomePage: React.FunctionComponent<IHomePageProps> = props => {
   BackgroundLocation.addListener(
     'onlineNotificationAction',
     (isOnline: any) => {
-      console.log('onlineNotificationAction', isOnline.value);
+      console.log('from react onlineNotificationAction', isOnline.value);
     },
   );
 
@@ -160,6 +160,15 @@ const HomePage: React.FunctionComponent<IHomePageProps> = props => {
         },
         {
           onlineNotificationAction: true,
+        },
+        {
+          actionOnline: 'Mark Online test',
+        },
+        {
+          actionOffline: 'Mark Offline test',
+        },
+        {
+          isOnline: true,
         },
         type
           ? {
