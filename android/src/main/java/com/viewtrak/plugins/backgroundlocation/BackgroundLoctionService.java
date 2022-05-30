@@ -242,10 +242,19 @@ public class BackgroundLoctionService extends Service {
         }
 
         void onActivityStopped() {
-            Notification notification = getNotification();
-            if (notification != null) {
-                startForeground(NOTIFICATION_ID, notification);
-            }
+
+            if (isOnline) {
+                if (onlineNotification != null)
+                    startForeground(NOTIFICATION_ID, onlineNotification);
+
+                    ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(
+                            NOTIFICATION_ID,
+                            onlineNotification
+                    );
+            } else if (offlineNotification != null)
+                startForeground(NOTIFICATION_ID, offlineNotification);
+
+
         }
 
         void stopService() {
