@@ -139,17 +139,17 @@ public class BackgroundLoctionService extends Service {
                     intent.putExtra("id", id);
                     LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
 
-                    if (isOnline) {
-                        if (watcher.onlineNotification != null)
-                            ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(
-                                    NOTIFICATION_ID,
-                                    watcher.onlineNotification
-                            );
-                    } else if (watcher.offlineNotification != null)
-                        ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(
-                                NOTIFICATION_ID,
-                                watcher.offlineNotification
-                        );
+//                    if (isOnline) {
+//                        if (watcher.onlineNotification != null)
+//                            ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(
+//                                    NOTIFICATION_ID,
+//                                    watcher.onlineNotification
+//                            );
+//                    } else if (watcher.offlineNotification != null)
+//                        ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(
+//                                NOTIFICATION_ID,
+//                                watcher.offlineNotification
+//                        );
                 }
 
                 @Override
@@ -243,17 +243,17 @@ public class BackgroundLoctionService extends Service {
 
         void onActivityStopped() {
 
-            if (isOnline) {
-                if (onlineNotification != null)
-                    startForeground(NOTIFICATION_ID, onlineNotification);
+            if (isOnline && onlineNotification != null)
+                startForeground(NOTIFICATION_ID, onlineNotification);
 
-                    ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(
-                            NOTIFICATION_ID,
-                            onlineNotification
-                    );
-            } else if (offlineNotification != null)
+            else if (!isOnline && offlineNotification != null)
                 startForeground(NOTIFICATION_ID, offlineNotification);
-
+            else{
+                Notification notification = getNotification();
+                if (notification != null) {
+                    startForeground(NOTIFICATION_ID, notification);
+                }
+            }
 
         }
 
