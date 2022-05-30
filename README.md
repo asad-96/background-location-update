@@ -88,11 +88,11 @@ Configration specific to Android can be made in `strings.xml`:
 
 <docgen-index>
 
-- [`addWatcher(...)`](#addwatcher)
-- [`removeWatcher(...)`](#removewatcher)
-- [`openSettings()`](#opensettings)
-- [`addListener('onlineNotificationAction', ...)`](#addlisteneronlinenotificationaction)
-- [Interfaces](#interfaces)
+* [`addWatcher(...)`](#addwatcher)
+* [`removeWatcher(...)`](#removewatcher)
+* [`openSettings()`](#opensettings)
+* [`addListener('onlineNotificationAction', ...)`](#addlisteneronlinenotificationaction)
+* [Interfaces](#interfaces)
 
 </docgen-index>
 
@@ -103,68 +103,6 @@ Configration specific to Android can be made in `strings.xml`:
 
 ```typescript
 addWatcher(options: WatcherOptions, callback: (position?: Location | undefined, error?: CallbackError | undefined) => void) => Promise<string>
-
-// To start listening for changes in the device's location, add a new watcher.
-// You do this by calling 'addWatcher' with an options object and a callback. A
-// Promise is returned, which resolves to the callback ID used to remove the
-// watcher in the future. The callback will be called every time a new location
-// is available. Watchers can not be paused, only removed. Multiple watchers may
-// exist simultaneously.
-await BackgroundLocation.addWatcher(
-    // If the "backgroundMessage" option is defined, the watcher will
-    // provide location updates whether the app is in the background or the
-    // foreground. If it is not defined, location updates are only
-    // guaranteed in the foreground. This is true on both platforms.
-
-    // On Android, a notification must be shown to continue receiving
-    // location updates in the background. This option specifies the text of
-    // that notification.
-    backgroundMessage: "Cancel to prevent battery drain.",
-
-    // The title of the notification mentioned above. Defaults to "Using
-    // your location".
-    backgroundTitle: "Tracking You.",
-
-    // Whether permissions should be requested from the user automatically,
-    // if they are not already granted. Defaults to "true".
-    requestPermissions: true,
-
-    // If "true", stale locations may be delivered while the device
-    // obtains a GPS fix. You are responsible for checking the "time"
-    // property. If "false", locations are guaranteed to be up to date.
-    // Defaults to "false".
-    stale: false,
-
-    // The minimum number of metres between subsequent locations. Defaults
-    // to 0.
-    distanceFilter: 50,
-    // To add notification action for android platform only. Defaults
-    // to false.
-    onlineNotificationAction: false
-    },
-    (location, error) => watcher_callback(location, error),
-);
-
-watcher_callback(location, error) {
-    if (error) {
-        if (error.code === "NOT_AUTHORIZED") {
-            if (window.confirm(
-                "This app needs your location, " +
-                "but does not have permission.\n\n" +
-                "Open settings now?"
-            )) {
-                // It can be useful to direct the user to their device's
-                // settings when location permissions have been denied. The
-                // plugin provides the 'openSettings' method to do exactly
-                // this.
-                BackgroundGeolocation.openSettings();
-            }
-        }
-        return console.error(error);
-    }
-
-    return console.log(location);
-}
 ```
 
 | Param          | Type                                                                                                                      |
@@ -174,42 +112,55 @@ watcher_callback(location, error) {
 
 **Returns:** <code>Promise&lt;string&gt;</code>
 
----
+--------------------
+
 
 ### removeWatcher(...)
 
 ```typescript
 removeWatcher(options: { id: string; }) => Promise<void>
-
-// When a watcher is no longer needed, it should be removed by calling
-// 'removeWatcher' with an object containing its ID.
-BackgroundGeolocation.removeWatcher({
-    id: watcher_id
-});
-
 ```
 
 | Param         | Type                         |
 | ------------- | ---------------------------- |
 | **`options`** | <code>{ id: string; }</code> |
 
----
+--------------------
+
 
 ### openSettings()
 
 ```typescript
 openSettings() => Promise<void>
-
-// It can be useful to direct the user to their device's
-// settings when location permissions have been denied. The
-// plugin provides the 'openSettings' method to do exactly
-// this.
-BackgroundGeolocation.openSettings();
 ```
 
----
+--------------------
+
+
+### addListener('onlineNotificationAction', ...)
+
+```typescript
+addListener(eventName: 'onlineNotificationAction', listenerFunc: (data: { isOnline: boolean; }) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
+```
+
+Called when onlineNotificationAction set to true in addWatcher() and result received
+
+Provides onlineNotificationAction result.
+
+| Param              | Type                                                   |
+| ------------------ | ------------------------------------------------------ |
+| **`eventName`**    | <code>'onlineNotificationAction'</code>                |
+| **`listenerFunc`** | <code>(data: { isOnline: boolean; }) =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+**Since:** 2.0.2
+
+--------------------
+
 
 ### Interfaces
+
 
 #### WatcherOptions
 
@@ -221,6 +172,7 @@ BackgroundGeolocation.openSettings();
 | **`stale`**                    | <code>boolean</code> |
 | **`distanceFilter`**           | <code>number</code>  |
 | **`onlineNotificationAction`** | <code>boolean</code> |
+
 
 #### Location
 
@@ -236,31 +188,18 @@ BackgroundGeolocation.openSettings();
 | **`speed`**            | <code>number \| null</code> |
 | **`time`**             | <code>number \| null</code> |
 
-{
-// Longitude in degrees.
-longitude: 131.723423719132,
-// Latitude in degrees.
-latitude: -22.40106297456,
-// Radius of horizontal uncertainty in metres, with 68% confidence.
-accuracy: 11,
-// Metres above sea level (or null).
-altitude: 65,
-// Vertical uncertainty in metres, with 68% confidence (or null).
-altitudeAccuracy: 4,
-// Deviation from true north in degrees (or null).
-bearing: 159.60000610351562,
-// True if the location was simulated by software, rather than GPS.
-simulated: false,
-// Speed in metres per second (or null).
-speed: 23.51068878173828,
-// Time the location was produced, in milliseconds since the unix epoch.
-time: 1562731602000
-}
 
 #### CallbackError
 
 | Prop       | Type                |
 | ---------- | ------------------- |
 | **`code`** | <code>string</code> |
+
+
+#### PluginListenerHandle
+
+| Prop         | Type                                      |
+| ------------ | ----------------------------------------- |
+| **`remove`** | <code>() =&gt; Promise&lt;void&gt;</code> |
 
 </docgen-api>

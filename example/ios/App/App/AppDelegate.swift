@@ -1,5 +1,7 @@
 import UIKit
 import Capacitor
+//import UserNotifications
+import BackgroundLocationUpdate
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -19,6 +21,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidEnterBackground(_ application: UIApplication) {
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+        NotificationCenter.default.post(name: NSNotification.Name(AppInBackground.ShowLocationNotification.name()), object: nil)
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
@@ -45,7 +48,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // tracking app url opens, make sure to keep this call
         return ApplicationDelegateProxy.shared.application(application, continue: userActivity, restorationHandler: restorationHandler)
     }
-
+    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
 
@@ -58,3 +61,4 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
 }
+

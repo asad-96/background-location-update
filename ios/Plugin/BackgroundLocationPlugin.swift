@@ -1,7 +1,21 @@
 import Foundation
 import Capacitor
 import CoreLocation
+import UserNotifications
 
+
+/**
+ * Notificaton types for NSNotificationCenter
+ */
+@objc public enum AppInBackground: Int {
+  case ShowLocationNotification
+  
+  public func name() -> String {
+    switch self {
+    case .ShowLocationNotification: return "CAPShowLocationNotification"
+    }
+  }
+}
 /**
  * Please read the Capacitor iOS Plugin Development Guide
  * here: https://capacitorjs.com/docs/plugins/ios
@@ -69,12 +83,22 @@ class Watcher {
     }
 }
 
+
+
 @objc(BackgroundLocationPlugin)
 public class BackgroundLocationPlugin: CAPPlugin, CLLocationManagerDelegate {
     private var watchers = [Watcher]()
+    private let eventName = "BACKGROUNDLOCATIONNOTIFY"
+    private var isBackground = false
+    private var isActive = false
+    private var notificationTitle = "Notification Title"
+    private var notificationSubtitle = "Notification Subtitle"
+    private var stringActionOnline = "Mark Online"
+    private var stringActionOffline = "Mark Offline"
     
     @objc public override func load() {
         UIDevice.current.isBatteryMonitoringEnabled = true
+        NotificationCenter.default.addObserver(self, selector: #selector(showBackgroundLocationNotification), name: NSNotification.Name(AppInBackground.ShowLocationNotification.name()), object: nil)
     }
     
     @objc func addWatcher(_ call: CAPPluginCall) {
@@ -103,6 +127,14 @@ public class BackgroundLocationPlugin: CAPPlugin, CLLocationManagerDelegate {
             ) ?? kCLDistanceFilterNone;
             manager.allowsBackgroundLocationUpdates = background
             self.watchers.append(watcher)
+            self.isBackground = background
+            self.isActive = call.getBool("isActive", false)
+//            if (call.getBool("isActive", false)) {
+                self.notificationTitle = call.getString("backgroundTitle", "App is tracking your location in background")
+                self.notificationSubtitle = call.getString("backgroundMessage", "Mark offline to stop location tracking")
+                self.stringActionOnline = call.getString("actionOnline", "Mark Online")
+                self.stringActionOffline = call.getString("actionOffline", "Mark Offline")
+//            }
             if call.getBool("requestPermissions") != false {
                 let status = CLLocationManager.authorizationStatus()
                 if [
@@ -124,6 +156,17 @@ public class BackgroundLocationPlugin: CAPPlugin, CLLocationManagerDelegate {
                 }
             }
             return watcher.start()
+        }
+    }
+
+    @objc func showBackgroundLocationNotification() {
+        if (!isActive && isBackground) {
+            isActive = true
+            showNotification(notificationTitle, notificationSubtitle, stringActionOffline)
+        }
+        else if (isActive && isBackground) {
+            isActive = false
+            showNotification(notificationTitle, notificationSubtitle, stringActionOnline)
         }
     }
     
@@ -167,6 +210,43 @@ public class BackgroundLocationPlugin: CAPPlugin, CLLocationManagerDelegate {
                 return call.reject("Cannot open settings")
             }
         }
+    }
+    
+    public func showNotification(_ title: String,_ subTitle: String,_ actionString: String) {
+        let center = UNUserNotificationCenter.current()
+        
+        center.requestAuthorization(options: [.alert, .sound], completionHandler: { granted, error in
+        })
+        
+        let content = UNMutableNotificationContent()
+        content.title = title
+//        content.body = body
+        content.subtitle = subTitle
+        content.categoryIdentifier = "activeCate"
+
+        let action = UNNotificationAction(identifier: "active_action", title: actionString, options: UNNotificationActionOptions.init(rawValue: 0))
+
+        let actionCate = UNNotificationCategory(identifier: "activeCate", actions: [action], intentIdentifiers: [])
+
+        center.setNotificationCategories([actionCate])
+        center.delegate = self
+        
+        // Step 3: Create notification trigger
+        let date = Date().addingTimeInterval(2)
+        let dateComponents = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .second], from: date)
+        
+        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
+        
+        // Step 4: Create the request
+        
+        let uuidString = "backgroundlocationupdateplugin"
+        let request = UNNotificationRequest(identifier: uuidString, content: content, trigger: trigger)
+        
+        // Step 5: Register the request
+        
+        center.add(request, withCompletionHandler: {(error) in
+            NSLog("Error")
+        })
     }
     
     public func locationManager(
@@ -227,4 +307,24 @@ public class BackgroundLocationPlugin: CAPPlugin, CLLocationManagerDelegate {
             }
         }
     }
+    
+}
+
+extension BackgroundLocationPlugin: UNUserNotificationCenterDelegate {
+
+        public func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+            completionHandler([.alert])
+        }
+        
+        public func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+            switch response.actionIdentifier {
+            case "active_action":
+                self.showBackgroundLocationNotification()
+                self.notifyListeners("onlineNotificationAction", data: ["isOnline": self.isActive])
+            default:
+                print("Other Action")
+            }
+
+            completionHandler()
+        }
 }
