@@ -3,4 +3,4 @@ include ':capacitor-android'
 project(':capacitor-android').projectDir = new File('../node_modules/@capacitor/android/capacitor')
 
 include ':background-location-update'
-project(':background-location-update').projectDir = new File('../../android')
+project(':background-location-update').projectDir = new File('../node_modules/background-location-update/android')

@@ -35,7 +35,7 @@ const HomePage: React.FunctionComponent<IHomePageProps> = props => {
   //     );
   //   }, []);
 
-  BackgroundLocation.addListener(
+  const backgroundListener = BackgroundLocation.addListener(
     'onlineNotificationAction',
     (isOnline: any) => {
       console.log('from react onlineNotificationAction', isOnline.value);
@@ -55,36 +55,37 @@ const HomePage: React.FunctionComponent<IHomePageProps> = props => {
     return new Promise(function (resolve) {
       let last_location: Location | undefined;
       let id: string;
-      BackgroundLocation.addWatcher(
-        {
-          requestPermissions: true,
-          stale: true,
-        },
-        async function callback(location) {
-          last_location = location;
-          if (location !== undefined) {
-            try {
-              await setDoc(
-                doc(
-                  db,
-                  'locations_fg/',
-                  Math.floor(Date.now() / 1000).toString(),
-                ),
-                location,
-              );
-            } catch (error) {
-              console.error(error);
-            }
-          }
-        },
-      ).then(function retain_callback_id(the_id) {
-        // const col = collection(db, "Locations")
-        id = the_id;
-      });
+      // BackgroundLocation.addWatcher(
+      //   {
+      //     requestPermissions: true,
+      //     stale: true,
+      //   },
+      //   async function callback(location) {
+      //     last_location = location;
+      //     if (location !== undefined) {
+      //       try {
+      //         await setDoc(
+      //           doc(
+      //             db,
+      //             'locations_fg/',
+      //             Math.floor(Date.now() / 1000).toString(),
+      //           ),
+      //           location,
+      //         );
+      //       } catch (error) {
+      //         console.error(error);
+      //       }
+      //     }
+      //   },
+      // ).then(function retain_callback_id(the_id) {
+      //   // const col = collection(db, "Locations")
+      //   id = the_id;
+      // });
 
       setTimeout(function () {
         resolve(last_location);
-        BackgroundLocation.removeWatcher({ id });
+        // BackgroundLocation.removeWatcher({ id });
+        backgroundListener.remove();
       }, timeout);
     });
   };
