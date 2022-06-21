@@ -215,6 +215,27 @@ BackgroundGeolocation.openSettings();
 
 ---
 
+### addlisteneronlinenotificationaction(...)
+
+```typescript
+  /**
+   * Called when onlineNotificationAction set to true in addWatcher() and result received
+   *
+   * Provides onlineNotificationAction result.
+   *
+   * To remove the listener listener.remove() can be used.
+   *
+   * @since 2.0.2
+   */
+  addListener(
+    eventName: 'onlineNotificationAction',
+    listenerFunc: (data: { isOnline: boolean }) => void,
+  ): Promise<PluginListenerHandle> & PluginListenerHandle;
+
+```
+
+---
+
 ### Interfaces
 
 #### WatcherOptions
